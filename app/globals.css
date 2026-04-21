@@ -1,0 +1,375 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+@import "tailwindcss";
+@source not "../supabase";
+
+@theme {
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ocean: #0f2557;
+  --color-ocean-light: #1a3a7a;
+  --color-sky: #2196F3;
+  --color-sky-light: #64B5F6;
+  --color-aqua: #00BCD4;
+  --color-sunny: #FFD600;
+  --color-sunny-light: #FFF176;
+  --color-coral: #FF7043;
+  --color-mint: #26A69A;
+  --color-gold: #FFD700;
+  --color-silver: #C0C0C0;
+  --color-bronze: #CD7F32;
+
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Sarabun', 'Inter', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  --background: #0a1628;
+  --foreground: #f0f4ff;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-body);
+}
+
+/* Custom Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes swim {
+  0% { transform: translateX(-100%) scaleX(-1); }
+  50% { transform: translateX(50vw) scaleX(-1); }
+  51% { transform: translateX(50vw) scaleX(1); }
+  100% { transform: translateX(-100%) scaleX(1); }
+}
+
+@keyframes bike-wheel {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(33, 150, 243, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(33, 150, 243, 0.6); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce-in {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  75% { transform: rotate(-15deg); }
+}
+
+@keyframes coach-pop {
+  0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+  60% { transform: scale(1.1) translateY(-5px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes ball-serve {
+  0% { left: 3rem; top: 54%; transform: translateY(-50%) scale(1); opacity: 1; }
+  30% { left: 40%; top: 20%; transform: translateY(0) scale(1.05); opacity: 1; }
+  60% { left: 70%; top: 48%; transform: translateY(-50%) scale(0.95); opacity: 1; }
+  100% { left: 105%; top: 54%; transform: translateY(-50%) scale(1); opacity: 0; }
+}
+
+@keyframes player-cheer {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-4px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-2px); }
+}
+
+@keyframes ball-bounce {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  25% { transform: translateY(-60%) scale(1.1); }
+  50% { transform: translateY(-40%) scale(0.9); }
+  75% { transform: translateY(-55%) scale(1.05); }
+}
+
+@keyframes ball-cross-to-opponent {
+  0% { left: 5%; top: 38%; transform: translateY(-50%) scale(1); }
+  30% { left: 30%; top: 24%; transform: translateY(-50%) scale(1.05); }
+  65% { left: 65%; top: 28%; transform: translateY(-50%) scale(0.95); }
+  100% { left: 92%; top: 38%; transform: translateY(-50%) scale(1); }
+}
+
+@keyframes ball-cross-to-team {
+  0% { left: 92%; top: 38%; transform: translateY(-50%) scale(1); }
+  30% { left: 65%; top: 24%; transform: translateY(-50%) scale(1.05); }
+  65% { left: 30%; top: 28%; transform: translateY(-50%) scale(0.95); }
+  100% { left: 5%; top: 38%; transform: translateY(-50%) scale(1); }
+}
+
+@keyframes ball-spike-correct {
+  0% { left: 2.5rem; top: 8rem; transform: translateY(-50%) scale(1) rotate(0deg); }
+  25% { left: 8rem; top: 6rem; transform: translateY(-50%) scale(1.2) rotate(45deg); }
+  50% { left: 14rem; top: 8rem; transform: translateY(-50%) scale(1) rotate(90deg); }
+  75% { left: 20rem; top: 6rem; transform: translateY(-50%) scale(1.1) rotate(135deg); }
+  100% { left: 26rem; top: 8rem; transform: translateY(-50%) scale(1) rotate(180deg); }
+}
+
+@keyframes ball-spike-wrong {
+  0% { left: 2.5rem; top: 8rem; transform: translateY(-50%) scale(1) rotate(0deg); }
+  25% { left: -2rem; top: 6rem; transform: translateY(-50%) scale(1.2) rotate(-45deg); }
+  50% { left: -6rem; top: 8rem; transform: translateY(-50%) scale(1) rotate(-90deg); }
+  75% { left: -2rem; top: 6rem; transform: translateY(-50%) scale(1.1) rotate(-135deg); }
+  100% { left: 2.5rem; top: 8rem; transform: translateY(-50%) scale(1) rotate(-180deg); }
+}
+
+@keyframes net-shake {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  10% { transform: translateX(-50%) rotate(-2deg); }
+  20% { transform: translateX(-50%) rotate(2deg); }
+  30% { transform: translateX(-50%) rotate(-1deg); }
+  40% { transform: translateX(-50%) rotate(1deg); }
+  50% { transform: translateX(-50%) rotate(0deg); }
+}
+
+@keyframes score-scale {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes court-light-flash {
+  0%, 100% { box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.3); }
+}
+
+@keyframes court-victory-flash {
+  0%, 100% { box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.2), 0 0 30px rgba(255, 215, 0, 0.1); }
+  25% { box-shadow: inset 0 0 40px rgba(255, 215, 0, 0.4), 0 0 50px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: inset 0 0 60px rgba(255, 215, 0, 0.6), 0 0 70px rgba(255, 215, 0, 0.3); }
+  75% { box-shadow: inset 0 0 40px rgba(255, 215, 0, 0.4), 0 0 50px rgba(255, 215, 0, 0.2); }
+}
+
+@keyframes court-surge {
+  0% { opacity: 0.05; transform: scaleX(0.9); }
+  50% { opacity: 0.25; transform: scaleX(1.05); }
+  100% { opacity: 0.05; transform: scaleX(0.9); }
+}
+
+@keyframes match-intensity {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 28px rgba(255,255,255,0.05); }
+  50% { transform: scale(1.01); box-shadow: 0 0 42px rgba(255,255,255,0.15); }
+}
+
+@keyframes court-pulse {
+  0%, 100% { transform: scale(1); box-shadow: inset 0 0 18px rgba(255,255,255,0.08); }
+  50% { transform: scale(1.01); box-shadow: inset 0 0 42px rgba(255,255,255,0.2); }
+}
+
+@keyframes player-push {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-4px) scale(1.03); }
+  50% { transform: translateY(0) scale(1); }
+}
+
+@keyframes ball-swoosh {
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+  50% { transform: translateY(-3px) scale(1.05); filter: drop-shadow(0 0 10px rgba(255,255,255,0.35)); }
+  100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+}
+
+@keyframes crowd-wave {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+  25% { transform: translateY(-3px) scale(1.05); opacity: 1; }
+  50% { transform: translateY(-6px) scale(1.1); opacity: 0.9; }
+  75% { transform: translateY(-3px) scale(1.05); opacity: 1; }
+}
+
+@keyframes crowd-background {
+  0%, 100% { transform: translateY(0); opacity: 0.18; }
+  50% { transform: translateY(-6px); opacity: 0.28; }
+}
+
+.animate-crowd-background { animation: crowd-background 3s ease-in-out infinite; }
+.animate-court-pulse { animation: court-pulse 0.8s ease-in-out; }
+
+.animate-ball-serve { animation: ball-serve 2.8s ease-in-out infinite; }
+.animate-player-cheer { animation: player-cheer 1.8s ease-in-out infinite; }
+.animate-ball-bounce { animation: ball-bounce 0.6s ease-in-out; }
+.animate-ball-spike-correct { animation: ball-spike-correct 0.8s ease-out forwards; }
+.animate-ball-spike-wrong { animation: ball-spike-wrong 0.8s ease-out forwards; }
+.animate-net-shake { animation: net-shake 0.5s ease-in-out; }
+.animate-score-scale { animation: score-scale 0.4s ease-out; }
+.animate-court-light-flash { animation: court-light-flash 0.8s ease-in-out; }
+.animate-court-victory-flash { animation: court-victory-flash 1.5s ease-in-out; }
+.animate-court-surge { animation: court-surge 0.8s ease-in-out; }
+.animate-match-intensity { animation: match-intensity 0.8s ease-in-out; }
+.animate-player-push { animation: player-push 0.7s ease-in-out; }
+.animate-ball-swoosh { animation: ball-swoosh 0.7s ease-in-out; }
+.animate-crowd-wave { animation: crowd-wave 1.2s ease-in-out; }
+
+.animate-wave { animation: wave 2s ease-in-out infinite; }
+.animate-coach-pop { animation: coach-pop 0.5s ease-out forwards; }
+
+/* Game card hover effect */
+.game-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.game-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(33, 150, 243, 0.3);
+}
+
+/* Category bar hover */
+.category-bar {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.category-bar:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #FFD600 0%, #FF7043 50%, #FFD600 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero gradient background */
+.hero-gradient {
+  background: linear-gradient(135deg, #0f2557 0%, #1a3a7a 30%, #2196F3 70%, #00BCD4 100%);
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Sport icon container */
+.sport-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0f2557; }
+::-webkit-scrollbar-thumb { background: #2196F3; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #64B5F6; }
+
+/* Podium styles */
+.podium-1 { background: linear-gradient(180deg, #FFD700 0%, #FFA000 100%); }
+.podium-2 { background: linear-gradient(180deg, #E0E0E0 0%, #9E9E9E 100%); }
+.podium-3 { background: linear-gradient(180deg, #CD7F32 0%, #A0522D 100%); }
+
+/* ═══ Boxing Quiz Battle — Retro Arcade Animations ═══ */
+
+.retro-text {
+  font-family: 'Orbitron', 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+@keyframes idle-bounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes idle-bounce-slow {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-3px) scale(1.02); }
+}
+.animate-idle-bounce { animation: idle-bounce 1.2s ease-in-out infinite; }
+.animate-idle-bounce-slow { animation: idle-bounce-slow 1.5s ease-in-out infinite; }
+
+@keyframes hit-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-10px) rotate(-5deg); }
+  20% { transform: translateX(10px) rotate(5deg); }
+  30% { transform: translateX(-8px) rotate(-3deg); }
+  40% { transform: translateX(8px) rotate(3deg); }
+  50% { transform: translateX(-5px) rotate(-2deg); }
+  60% { transform: translateX(5px) rotate(2deg); }
+  70% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.animate-hit-shake { animation: hit-shake 0.5s ease-in-out; }
+
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3px, -2px); }
+  20% { transform: translate(3px, 2px); }
+  30% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  50% { transform: translate(-1px, 2px); }
+  60% { transform: translate(1px, -2px); }
+}
+.animate-screen-shake { animation: screen-shake 0.35s ease-in-out; }
+
+@keyframes player-punch {
+  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+  30% { transform: translateY(-50px) scale(1.4) rotate(-15deg); opacity: 1; }
+  60% { transform: translateY(-70px) scale(1.2) rotate(-10deg); opacity: 0.8; }
+  100% { transform: translateY(-90px) scale(0.5) rotate(0deg); opacity: 0; }
+}
+.animate-player-punch { animation: player-punch 0.5s ease-out forwards; }
+
+@keyframes bot-punch {
+  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+  30% { transform: translateY(50px) scale(1.4) rotate(15deg); opacity: 1; }
+  60% { transform: translateY(70px) scale(1.2) rotate(10deg); opacity: 0.8; }
+  100% { transform: translateY(90px) scale(0.5) rotate(0deg); opacity: 0; }
+}
+.animate-bot-punch { animation: bot-punch 0.5s ease-out forwards; }
+
+@keyframes dmg-float {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+  50% { transform: translateY(-18px) scale(1); opacity: 1; }
+  100% { transform: translateY(-35px) scale(0.8); opacity: 0; }
+}
+.animate-dmg-float { animation: dmg-float 1s ease-out forwards; }
+
+@keyframes flash-hit {
+  0% { opacity: 0.6; }
+  50% { opacity: 0; }
+  70% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+.animate-flash-hit { animation: flash-hit 0.4s ease-out forwards; }
+
+@keyframes ko-pop {
+  0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+  40% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+  60% { transform: scale(0.9) rotate(-2deg); }
+  80% { transform: scale(1.05) rotate(1deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.animate-ko-pop { animation: ko-pop 0.6s ease-out forwards; }
