@@ -9,7 +9,7 @@
     return (
       <div
         className="relative overflow-hidden bg-[#040a22] text-white"
-        style={{ fontFamily: "'Nunito', 'Noto Sans Thai Volleyball', sans-serif" }}
+        style={{ fontFamily: "'Nunito', 'Noto Sans Thai', sans-serif" }}
       >
         {/* subtle grid + blobs */}
         <div
@@ -248,16 +248,7 @@
           </div>
         </footer>
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
-          @font-face {
-            font-family: 'Noto Sans Thai Volleyball';
-            font-style: normal;
-            font-display: swap;
-            font-weight: 100 900;
-            src: url('/_astro/noto-sans-thai-thai-wght-normal.CtQSZ1tK.woff2')
-              format('woff2-variations');
-            unicode-range: U+02D7, U+0303, U+0331, U+0E01-0E5B, U+200C-200D, U+25CC;
-          }
+          @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Noto+Sans+Thai:wght@100..900&display=swap');
           @keyframes gamePulse {
             0%,
             100% {

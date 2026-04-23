@@ -22,6 +22,16 @@ interface CSSQuestion {
 type GameStatus = 'ready' | 'playing' | 'ko' | 'finished';
 type AnswerFeedback = 'correct' | 'wrong' | 'timeout' | null;
 type HitTarget = 'player' | 'bot' | null;
+type GameMode = 'rookie' | 'pro' | 'champ';
+type LearningCategory = 'flexbox' | 'animation' | 'responsive';
+
+interface RoundSummaryItem {
+  id: number;
+  category: LearningCategory;
+  event: string;
+  tip: string;
+  result: 'success' | 'fail';
+}
 
 // ══════════════════════════════════════════════════════════
 // คลังคำถามภาษาไทย — 40 ข้อ แบ่งหมวดหมู่
@@ -433,6 +443,7 @@ const QUESTION_POOL: CSSQuestion[] = [
     correctIndex: 1,
   },
 ];
+void QUESTION_POOL;
 
 // ══════════════════════════════════════════════════════════
 // ระบบสุ่มคำถามแบบ Smart Random
@@ -440,8 +451,95 @@ const QUESTION_POOL: CSSQuestion[] = [
 // - ไม่ซ้ำใน session เดียวกัน
 // - กระจายระดับความยาก
 // ══════════════════════════════════════════════════════════
-function smartShuffleQuestions(count = 3): CSSQuestion[] {
-  const pool = [...QUESTION_POOL];
+const BUG_EVENT_POOL: Array<Omit<CSSQuestion, 'category'> & { category: LearningCategory }> = [
+  {
+    id: 101, category: 'flexbox',
+    question: 'บั๊ก: ปุ่มในแถบนำทางเบี้ยว ไม่อยู่กึ่งกลางแนวตั้ง',
+    code: 'เลือกสกิลที่เหมาะที่สุดเพื่อจัดตำแหน่งทันที',
+    choices: ['ใช้สกิล Flexbox', 'ใช้สกิล Animation', 'ใช้สกิล Responsive'],
+    correctIndex: 0,
+  },
+  {
+    id: 102, category: 'flexbox',
+    question: 'บั๊ก: เมนูแนวนอนยาวเกิน ควรแตกบรรทัดเมื่อพื้นที่ไม่พอ',
+    code: 'เลือกสกิลที่แก้การจัดวางหลายองค์ประกอบได้เร็วสุด',
+    choices: ['ใช้สกิล Responsive', 'ใช้สกิล Flexbox', 'ใช้สกิล Animation'],
+    correctIndex: 1,
+  },
+  {
+    id: 103, category: 'flexbox',
+    question: 'บั๊ก: การ์ดเรียงแล้วช่องไฟไม่สมดุลทั้งแถว',
+    code: 'เลือกสกิลที่เน้นจัดแกนหลัก/รองของคอมโพเนนต์',
+    choices: ['ใช้สกิล Animation', 'ใช้สกิล Flexbox', 'ใช้สกิล Responsive'],
+    correctIndex: 1,
+  },
+  {
+    id: 104, category: 'flexbox',
+    question: 'บั๊ก: spacing ของ item ไม่คงที่เมื่อเนื้อหายาวไม่เท่ากัน',
+    code: 'เลือกสกิลที่คุมระยะห่างในกลุ่มองค์ประกอบได้แม่น',
+    choices: ['ใช้สกิล Flexbox', 'ใช้สกิล Responsive', 'ใช้สกิล Animation'],
+    correctIndex: 0,
+  },
+  {
+    id: 105, category: 'responsive',
+    question: 'บั๊ก: หน้าเพจพังทันทีเมื่อเปิดบนมือถือ',
+    code: 'เลือกสกิลที่ทำให้ UI ปรับตามขนาดหน้าจอ',
+    choices: ['ใช้สกิล Flexbox', 'ใช้สกิล Responsive', 'ใช้สกิล Animation'],
+    correctIndex: 1,
+  },
+  {
+    id: 106, category: 'responsive',
+    question: 'บั๊ก: Hero section สูงไม่พอดีกับอุปกรณ์แต่ละเครื่อง',
+    code: 'เลือกสกิลที่เน้นหน่วย viewport และ breakpoint',
+    choices: ['ใช้สกิล Animation', 'ใช้สกิล Responsive', 'ใช้สกิล Flexbox'],
+    correctIndex: 1,
+  },
+  {
+    id: 107, category: 'responsive',
+    question: 'บั๊ก: หัวข้อใหญ่เกินจนล้นบรรทัดบนจอแคบ',
+    code: 'เลือกสกิลที่ปรับ typography ตามหน้าจอได้',
+    choices: ['ใช้สกิล Responsive', 'ใช้สกิล Animation', 'ใช้สกิล Flexbox'],
+    correctIndex: 0,
+  },
+  {
+    id: 108, category: 'responsive',
+    question: 'บั๊ก: รูปสินค้าแตกเลย์เอาต์เมื่อหมุนจอ',
+    code: 'เลือกสกิลที่ทำให้คอมโพเนนต์ยืด/หดตาม viewport',
+    choices: ['ใช้สกิล Flexbox', 'ใช้สกิล Responsive', 'ใช้สกิล Animation'],
+    correctIndex: 1,
+  },
+  {
+    id: 109, category: 'animation',
+    question: 'บั๊ก: loading ดูค้างและไม่สื่อสารว่าระบบกำลังทำงาน',
+    code: 'เลือกสกิลที่ทำให้การเคลื่อนไหวลื่นและต่อเนื่อง',
+    choices: ['ใช้สกิล Responsive', 'ใช้สกิล Animation', 'ใช้สกิล Flexbox'],
+    correctIndex: 1,
+  },
+  {
+    id: 110, category: 'animation',
+    question: 'บั๊ก: แถบแจ้งเตือนเด้งแล้วหายทันที ผู้ใช้ตามไม่ทัน',
+    code: 'เลือกสกิลที่ควบคุม state ก่อน/หลังการเคลื่อนไหว',
+    choices: ['ใช้สกิล Flexbox', 'ใช้สกิล Animation', 'ใช้สกิล Responsive'],
+    correctIndex: 1,
+  },
+  {
+    id: 111, category: 'animation',
+    question: 'บั๊ก: hover animation กระชาก ทำให้ UI ดูแข็ง',
+    code: 'เลือกสกิลที่เน้น timing และ easing ของ motion',
+    choices: ['ใช้สกิล Animation', 'ใช้สกิล Responsive', 'ใช้สกิล Flexbox'],
+    correctIndex: 0,
+  },
+  {
+    id: 112, category: 'animation',
+    question: 'บั๊ก: เอฟเฟกต์โจมตีไม่เป็นจังหวะตามเฟรมที่ต้องการ',
+    code: 'เลือกสกิลที่คุมลำดับ motion เป็นช่วงเวลาได้ละเอียด',
+    choices: ['ใช้สกิล Responsive', 'ใช้สกิล Flexbox', 'ใช้สกิล Animation'],
+    correctIndex: 2,
+  },
+];
+
+function smartShuffleQuestions(count = 12): CSSQuestion[] {
+  const pool = [...BUG_EVENT_POOL];
 
   // Shuffle Fisher-Yates
   for (let i = pool.length - 1; i > 0; i--) {
@@ -502,18 +600,32 @@ function smartShuffleQuestions(count = 3): CSSQuestion[] {
 }
 
 const TIMER_SECONDS = 12;
+void TIMER_SECONDS;
 const BASE_DAMAGE = 20;
 const MAX_HP = 100;
 
-const CATEGORY_LABELS: Record<CSSQuestion['category'], string> = {
-  flexbox: 'Flexbox'
-  , grid: 'Grid'
-  , animation: 'Animation'
-  , selectors: 'Selectors'
-  , layout: 'Layout'
-  , typography: 'Typography'
-  , colors: 'Colors & Variables'
-  , responsive: 'Responsive Design'
+const MODE_CONFIG: Record<GameMode, {
+  label: string;
+  timerSeconds: number;
+  playerDamageMul: number;
+  botDamageMul: number;
+  scoreMul: number;
+}> = {
+  rookie: { label: 'Rookie', timerSeconds: 12, playerDamageMul: 1.05, botDamageMul: 0.9, scoreMul: 1.0 },
+  pro: { label: 'Pro', timerSeconds: 10, playerDamageMul: 1.0, botDamageMul: 1.0, scoreMul: 1.2 },
+  champ: { label: 'Champ', timerSeconds: 8, playerDamageMul: 0.95, botDamageMul: 1.15, scoreMul: 1.45 },
+};
+
+const TOPIC_TIPS: Record<LearningCategory, string> = {
+  flexbox: 'Flexbox เน้นจัดวางองค์ประกอบในแกนหลัก/แกนรองให้เร็วและยืดหยุ่น',
+  responsive: 'Responsive ใช้หน่วยและ media query ให้ UI ปรับตามหน้าจอ',
+  animation: 'Animation ที่ดีช่วยให้การเปลี่ยนสถานะลื่นและสื่อสารการโต้ตอบ',
+};
+
+const CATEGORY_LABELS: Record<LearningCategory, string> = {
+  flexbox: 'Flexbox',
+  animation: 'Animation',
+  responsive: 'Responsive Design',
 };
 
 const SPARKLE_POSITIONS = [
@@ -664,11 +776,13 @@ const SCOPED_STYLES = `
    Custom hook for all boxing game state & logic
    ───────────────────────────────────────────────────── */
 function useBoxingGame() {
-  const [questions, setQuestions] = useState<CSSQuestion[]>(() => smartShuffleQuestions(3));
+  const [questions, setQuestions] = useState<CSSQuestion[]>(() => smartShuffleQuestions(12));
   const [questionIndex, setQuestionIndex] = useState(0);
   const [playerHP, setPlayerHP] = useState(MAX_HP);
   const [botHP, setBotHP] = useState(MAX_HP);
-  const [timer, setTimer] = useState(TIMER_SECONDS);
+  const [mode, setMode] = useState<GameMode>('rookie');
+  const [timerMax, setTimerMax] = useState(MODE_CONFIG.rookie.timerSeconds);
+  const [timer, setTimer] = useState(MODE_CONFIG.rookie.timerSeconds);
   const [gameStatus, setGameStatus] = useState<GameStatus>('ready');
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<AnswerFeedback>(null);
@@ -683,12 +797,14 @@ function useBoxingGame() {
   const [anticipating, setAnticipating] = useState<HitTarget>(null);
   const [roundText, setRoundText] = useState<string | null>(null);
   const [roundTextPhase, setRoundTextPhase] = useState<'in' | 'out'>('in');
-  const [allCorrect, setAllCorrect] = useState(true);
+  const [score, setScore] = useState(0);
+  const [roundSummary, setRoundSummary] = useState<RoundSummaryItem[]>([]);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const nextRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const question = questions[questionIndex] ?? null;
   const totalQ = questions.length;
+  const modeCfg = MODE_CONFIG[mode];
 
   const clearTimers = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -696,11 +812,9 @@ function useBoxingGame() {
   }, []);
 
   const calcDamage = useCallback((c: number) => {
-    if (c >= 4) return Math.floor(BASE_DAMAGE * 2.0);
-    if (c >= 3) return Math.floor(BASE_DAMAGE * 1.75);
-    if (c >= 2) return Math.floor(BASE_DAMAGE * 1.5);
-    return BASE_DAMAGE;
-  }, []);
+    const comboMul = c >= 4 ? 2.0 : c >= 3 ? 1.75 : c >= 2 ? 1.5 : 1;
+    return Math.floor(BASE_DAMAGE * comboMul * modeCfg.playerDamageMul);
+  }, [modeCfg.playerDamageMul]);
 
   const triggerShake = useCallback(() => {
     setScreenShake(true);
@@ -731,72 +845,97 @@ function useBoxingGame() {
       setButtonsLocked(false);
       setHitTarget(null);
       setAnticipating(null);
-      setTimer(TIMER_SECONDS);
+      setTimer(timerMax);
       setLastDmg(0);
     }, 2000);
-  }, [questionIndex, totalQ]);
+  }, [questionIndex, totalQ, timerMax]);
 
-  const processAnswer = useCallback((isCorrect: boolean) => {
+  const processAnswer = useCallback((isCorrect: boolean, reason: 'answer' | 'timeout' = 'answer') => {
     setButtonsLocked(true);
     clearTimers();
-    if (!isCorrect) setAllCorrect(false);
 
     if (isCorrect) {
       const newCombo = combo + 1;
       const dmg = calcDamage(newCombo);
+      const scoreGain = Math.round((100 + timer * 10 + newCombo * 15) * (1 + Math.max(0, newCombo - 1) * 0.2) * modeCfg.scoreMul);
       setAnticipating('player');
       setTimeout(() => {
         setAnticipating(null);
         setCombo(newCombo);
         setMaxCombo(prev => Math.max(prev, newCombo));
         setCorrect(prev => prev + 1);
+        setScore(prev => prev + scoreGain);
         setFeedback('correct');
         setHitTarget('bot');
         setLastDmg(dmg);
+        if (question && (question.category in TOPIC_TIPS)) {
+          setRoundSummary(prev => [...prev, {
+            id: question.id,
+            category: question.category as LearningCategory,
+            event: question.question,
+            tip: TOPIC_TIPS[question.category as LearningCategory],
+            result: 'success',
+          }]);
+        }
         triggerShake();
         const newBotHP = Math.max(0, botHP - dmg);
         setBotHP(newBotHP);
         advance(playerHP, newBotHP);
       }, 250);
     } else {
-      const dmg = BASE_DAMAGE;
+      const dmg = Math.floor(BASE_DAMAGE * modeCfg.botDamageMul);
+      const scorePenalty = reason === 'timeout' ? 60 : 40;
       setAnticipating('bot');
       setTimeout(() => {
         setAnticipating(null);
         setCombo(0);
         setWrong(prev => prev + 1);
-        setFeedback('wrong');
+        setFeedback(reason === 'timeout' ? 'timeout' : 'wrong');
+        setScore(prev => Math.max(0, prev - scorePenalty));
         setHitTarget('player');
         setLastDmg(dmg);
+        if (question && (question.category in TOPIC_TIPS)) {
+          setRoundSummary(prev => [...prev, {
+            id: question.id,
+            category: question.category as LearningCategory,
+            event: question.question,
+            tip: TOPIC_TIPS[question.category as LearningCategory],
+            result: 'fail',
+          }]);
+        }
         triggerShake();
         const newPlayerHP = Math.max(0, playerHP - dmg);
         setPlayerHP(newPlayerHP);
         advance(newPlayerHP, botHP);
       }, 250);
     }
-  }, [combo, calcDamage, botHP, playerHP, clearTimers, triggerShake, advance]);
+  }, [combo, calcDamage, botHP, playerHP, clearTimers, triggerShake, advance, timer, modeCfg.scoreMul, modeCfg.botDamageMul, question]);
 
   const handleAnswer = useCallback((idx: number) => {
     if (buttonsLocked || gameStatus !== 'playing' || !question) return;
     setSelectedAnswer(idx);
-    processAnswer(idx === question.correctIndex);
+    processAnswer(idx === question.correctIndex, 'answer');
   }, [buttonsLocked, gameStatus, question, processAnswer]);
 
   const handleTimeout = useCallback(() => {
     if (buttonsLocked || gameStatus !== 'playing') return;
     setFeedback('timeout');
-    processAnswer(false);
+    processAnswer(false, 'timeout');
   }, [buttonsLocked, gameStatus, processAnswer]);
 
-  const startGame = useCallback(() => {
-    const newQuestions = smartShuffleQuestions(3);
+  const startGame = useCallback((nextMode: GameMode = mode) => {
+    const cfg = MODE_CONFIG[nextMode];
+    const newQuestions = smartShuffleQuestions(12);
+    setMode(nextMode);
+    setTimerMax(cfg.timerSeconds);
     setQuestions(newQuestions);
     setQuestionIndex(0); setPlayerHP(MAX_HP); setBotHP(MAX_HP);
-    setTimer(TIMER_SECONDS); setSelectedAnswer(null);
+    setTimer(cfg.timerSeconds); setSelectedAnswer(null);
     setFeedback(null); setButtonsLocked(true); setHitTarget(null);
     setCombo(0); setMaxCombo(0); setCorrect(0); setWrong(0);
     setLastDmg(0); setScreenShake(false); setAnticipating(null);
-    setAllCorrect(true);
+    setScore(0);
+    setRoundSummary([]);
     clearTimers();
 
     showRoundTransition('ยก 1', 1400, () => {
@@ -804,7 +943,7 @@ function useBoxingGame() {
       setButtonsLocked(false);
     });
     setGameStatus('playing');
-  }, [clearTimers, showRoundTransition]);
+  }, [clearTimers, showRoundTransition, mode]);
 
   const punchAudioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {
@@ -820,7 +959,7 @@ function useBoxingGame() {
           punchAudioRef.current.currentTime = 0;
           void punchAudioRef.current.play();
         }
-      } catch (e) { /* ignore */ }
+      } catch { /* ignore */ }
     }
   }, [hitTarget]);
 
@@ -836,14 +975,15 @@ function useBoxingGame() {
 
   const winner: 'player' | 'bot' | 'draw' =
     playerHP > botHP ? 'player' : botHP > playerHP ? 'bot' : 'draw';
-  const canAdvance = winner === 'player' && allCorrect;
+  const canAdvance = winner === 'player';
 
   return {
     question, questionIndex, totalQ,
-    playerHP, botHP, timer,
+    playerHP, botHP, timer, timerMax,
     gameStatus, selectedAnswer, feedback,
     buttonsLocked, hitTarget, combo, maxCombo,
-    correct, wrong, lastDmg, screenShake, winner, canAdvance, allCorrect,
+    correct, wrong, lastDmg, screenShake, winner, canAdvance,
+    score, mode, modeLabel: modeCfg.label, roundSummary,
     anticipating, roundText, roundTextPhase,
     startGame, handleAnswer,
   };
@@ -1102,7 +1242,7 @@ function BoxingRing({
       {/* Hit text */}
       {feedback && (
         <div style={{ position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)', zIndex: 20, pointerEvents: 'none', fontFamily: 'monospace', fontWeight: 900, fontSize: '18px', letterSpacing: '2px', color: feedback === 'correct' ? '#ffd600' : '#ff4444', textShadow: feedback === 'correct' ? '0 0 12px rgba(255,214,0,0.8), 2px 2px 0 rgba(0,0,0,0.5)' : '0 0 12px rgba(255,68,68,0.8), 2px 2px 0 rgba(0,0,0,0.5)', animation: 'feedIn 0.2s ease-out' }}>
-          {feedback === 'correct' ? '💥 โจมตีสำเร็จ!' : feedback === 'timeout' ? '⏰ หมดเวลา!' : '💢 โดนสกัด!'}
+          {feedback === 'correct' ? '💥 FIX สำเร็จ!' : feedback === 'timeout' ? '⏰ แก้ไม่ทัน!' : '💢 FIX พลาด!'}
         </div>
       )}
 
@@ -1129,13 +1269,14 @@ function BoxingRing({
 /* ══════════════════════════════════════════════════════════
    HUD
    ══════════════════════════════════════════════════════════ */
-function GameHUD({ playerHP, botHP, timer, questionIndex, totalQ, combo, currentCategory }: {
-  playerHP: number; botHP: number; timer: number; questionIndex: number; totalQ: number; combo: number;
-  currentCategory?: CSSQuestion['category'];
+function GameHUD({ playerHP, botHP, timer, timerMax, questionIndex, totalQ, combo, score, modeLabel, currentCategory }: {
+  playerHP: number; botHP: number; timer: number; timerMax: number; questionIndex: number; totalQ: number; combo: number;
+  score: number; modeLabel: string;
+  currentCategory?: LearningCategory;
 }) {
   const crit = timer <= 3;
   const warn = timer <= 5;
-  const timerPct = (timer / TIMER_SECONDS) * 100;
+  const timerPct = (timer / timerMax) * 100;
 
   return (
     <div style={{ background: 'rgba(8,10,22,0.88)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '10px', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -1164,7 +1305,7 @@ function GameHUD({ playerHP, botHP, timer, questionIndex, totalQ, combo, current
           <div style={{ width: '52px', height: '52px', background: crit ? 'rgba(255,50,50,0.12)' : 'rgba(255,255,255,0.04)', border: `2px solid ${crit ? 'rgba(255,80,80,0.65)' : warn ? 'rgba(255,180,0,0.4)' : 'rgba(255,255,255,0.1)'}`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'monospace', fontSize: '28px', fontWeight: 700, color: crit ? '#ff5252' : warn ? '#ffaa00' : '#fff', backdropFilter: 'blur(4px)', animation: crit ? 'timerWarn 0.5s infinite alternate' : undefined, boxShadow: crit ? '0 0 16px rgba(255,50,50,0.4)' : 'none' }}>
             {timer}
           </div>
-          <div style={{ fontFamily: 'monospace', fontSize: '8px', color: 'rgba(255,255,255,0.22)', marginTop: '3px' }}>ข้อ {questionIndex + 1}/{totalQ}</div>
+          <div style={{ fontFamily: 'monospace', fontSize: '8px', color: 'rgba(255,255,255,0.22)', marginTop: '3px' }}>อีเวนต์ {questionIndex + 1}/{totalQ}</div>
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px', flexDirection: 'row-reverse' }}>
@@ -1194,13 +1335,19 @@ function GameHUD({ playerHP, botHP, timer, questionIndex, totalQ, combo, current
       </div>
 
       {/* Category badge */}
-      {currentCategory && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'center' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'monospace', fontSize: '10px', color: '#facc15', background: 'rgba(250,204,21,0.08)', border: '1px solid rgba(250,204,21,0.25)', borderRadius: '6px', padding: '2px 10px' }}>
+          ⭐ SCORE {score}
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'monospace', fontSize: '10px', color: '#93c5fd', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(147,197,253,0.3)', borderRadius: '6px', padding: '2px 10px' }}>
+          🎮 {modeLabel}
+        </div>
+        {currentCategory ? (
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontFamily: 'monospace', fontSize: '10px', color: '#94a3b8', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '6px', padding: '2px 10px', animation: 'categoryBadge 0.3s ease-out' }}>
             {CATEGORY_LABELS[currentCategory]}
           </div>
-        </div>
-      )}
+        ) : null}
+      </div>
 
       <div style={{ height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden' }}>
         <div style={{ height: '100%', borderRadius: '4px', width: `${timerPct}%`, background: crit ? '#f44336' : warn ? 'linear-gradient(90deg, #ff9800, #ffc107)' : 'linear-gradient(90deg, #4caf50, #8bc34a)', transition: 'width 1s linear', boxShadow: crit ? '0 0 8px rgba(244,67,54,0.6)' : 'none' }} />
@@ -1216,7 +1363,7 @@ function QuestionPanel({ question, selected, feedback, locked, onAnswer }: {
   question: CSSQuestion; selected: number | null;
   feedback: AnswerFeedback; locked: boolean; onAnswer: (idx: number) => void;
 }) {
-  const labels = ['A', 'B', 'C', 'D'];
+  const labels = ['🥊', '🛠️', '⚡', '🎯'];
   const cfg = [
     { idle: 'rgba(139,92,246,0.18)', border: 'rgba(167,139,250,0.45)', accent: '#a78bfa', glow: 'rgba(139,92,246,0.3)' },
     { idle: 'rgba(6,182,212,0.18)', border: 'rgba(34,211,238,0.45)', accent: '#22d3ee', glow: 'rgba(6,182,212,0.3)' },
@@ -1229,8 +1376,8 @@ function QuestionPanel({ question, selected, feedback, locked, onAnswer }: {
       <div style={{ background: 'linear-gradient(135deg, rgba(15,20,50,0.92), rgba(10,14,38,0.95))', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(100,130,255,0.2)', borderRadius: '14px', padding: '16px 18px', boxShadow: '0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)', minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#60a5fa', boxShadow: '0 0 8px #60a5fa' }} />
-          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#60a5fa', letterSpacing: '2px' }}>คำถาม CSS</span>
-          <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize: '9px', color: '#475569' }}>{CATEGORY_LABELS[question.category]}</span>
+          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#60a5fa', letterSpacing: '2px' }}>MISSION EVENT</span>
+          <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize: '9px', color: '#475569' }}>{CATEGORY_LABELS[question.category as LearningCategory]}</span>
         </div>
         <p style={{ margin: '0 0 12px', color: '#f0f4ff', fontSize: '14px', fontWeight: 600, lineHeight: 1.6, fontFamily: 'system-ui, sans-serif' }}>{question.question}</p>
         <div style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(74,222,128,0.2)', borderLeft: '3px solid #4ade80', borderRadius: '8px', padding: '10px 14px', fontFamily: 'ui-monospace, monospace', fontSize: '13px', color: '#86efac', letterSpacing: '0.3px' }}>{question.code}</div>
@@ -1267,12 +1414,15 @@ function QuestionPanel({ question, selected, feedback, locked, onAnswer }: {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 16px', borderRadius: '12px', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', animation: 'feedIn 0.22s ease-out', fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: 600, ...(feedback === 'correct' ? { background: 'rgba(34,197,94,0.14)', border: '1px solid rgba(74,222,128,0.35)', color: '#86efac', boxShadow: '0 0 20px rgba(74,222,128,0.12)' } : feedback === 'wrong' ? { background: 'rgba(239,68,68,0.14)', border: '1px solid rgba(248,113,113,0.35)', color: '#fca5a5', boxShadow: '0 0 20px rgba(239,68,68,0.12)' } : { background: 'rgba(234,179,8,0.14)', border: '1px solid rgba(250,204,21,0.35)', color: '#fde68a', boxShadow: '0 0 20px rgba(234,179,8,0.12)' }) }}>
           <span style={{ fontSize: '18px' }}>{feedback === 'correct' ? '👊' : feedback === 'wrong' ? '💥' : '⏰'}</span>
           <span>
-            {feedback === 'correct' && 'โจมตีสำเร็จ! หมัดของคุณถูกเป้า!'}
-            {feedback === 'wrong' && 'โอ้โห! CPU สวนกลับมา!'}
-            {feedback === 'timeout' && 'หมดเวลา! CPU ต่อยฟรี!'}
+            {feedback === 'correct' && 'แก้บั๊กสำเร็จ! ได้จังหวะสวนกลับ!'}
+            {feedback === 'wrong' && 'เลือกสกิลไม่ตรงบั๊ก! CPU สวนกลับ!'}
+            {feedback === 'timeout' && 'ช้าเกินไป! บั๊กยังไม่ถูกแก้!'}
           </span>
         </div>
       )}
+      <div style={{ padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'rgba(15,23,42,0.45)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#cbd5e1' }}>
+        <strong style={{ color: '#93c5fd' }}>Micro tip:</strong> {TOPIC_TIPS[question.category as LearningCategory]}
+      </div>
     </div>
   );
 }
@@ -1280,7 +1430,8 @@ function QuestionPanel({ question, selected, feedback, locked, onAnswer }: {
 /* ══════════════════════════════════════════════════════════
    Ready Screen
    ══════════════════════════════════════════════════════════ */
-function ReadyScreen({ onStart }: { onStart: () => void }) {
+function ReadyScreen({ onStart }: { onStart: (mode: GameMode) => void }) {
+  const [selectedMode, setSelectedMode] = useState<GameMode>('rookie');
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -1310,10 +1461,10 @@ function ReadyScreen({ onStart }: { onStart: () => void }) {
 
       <div style={{ textAlign: 'center' }}>
         <h2 style={{ margin: 0, fontFamily: 'monospace', fontSize: '26px', fontWeight: 900, letterSpacing: '4px', color: '#fff', textShadow: '2px 2px 0 rgba(0,0,0,0.5), 0 0 20px rgba(100,180,255,0.3)' }}>
-          CSS Quiz Battle
+          CSS Bug Smash Battle
         </h2>
         <p style={{ margin: '6px 0 0', fontFamily: 'system-ui', fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
-          ตอบ CSS ให้ถูกทุกข้อเพื่อเดินหน้าต่อ! 🥊
+          แก้บั๊ก CSS ให้ทันในเวทีมวย! 🥊
         </p>
         {/* หมวดหมู่คำถาม */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginTop: '12px' }}>
@@ -1321,6 +1472,31 @@ function ReadyScreen({ onStart }: { onStart: () => void }) {
             <span key={label} style={{ fontFamily: 'monospace', fontSize: '10px', color: '#64748b', background: 'rgba(100,116,139,0.1)', border: '1px solid rgba(100,116,139,0.2)', borderRadius: '4px', padding: '2px 8px' }}>{label}</span>
           ))}
         </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        {(Object.entries(MODE_CONFIG) as Array<[GameMode, (typeof MODE_CONFIG)[keyof typeof MODE_CONFIG]]>).map(([modeKey, cfg]) => {
+          const active = selectedMode === modeKey;
+          return (
+            <button
+              type="button"
+              key={modeKey}
+              onClick={() => setSelectedMode(modeKey)}
+              style={{
+                padding: '10px 14px',
+                borderRadius: '10px',
+                border: active ? '1px solid rgba(96,165,250,0.8)' : '1px solid rgba(148,163,184,0.28)',
+                background: active ? 'rgba(30,64,175,0.35)' : 'rgba(15,23,42,0.55)',
+                color: active ? '#dbeafe' : '#cbd5e1',
+                fontFamily: 'monospace',
+                fontSize: '11px',
+                cursor: 'pointer',
+              }}
+            >
+              {cfg.label} · {cfg.timerSeconds}s
+            </button>
+          );
+        })}
       </div>
 
       {/* <div style={{ display: 'flex', gap: '10px' }}>
@@ -1332,7 +1508,7 @@ function ReadyScreen({ onStart }: { onStart: () => void }) {
         ))}
       </div> */}
 
-      <button onClick={onStart}
+      <button onClick={() => onStart(selectedMode)}
         style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 56px', background: 'linear-gradient(135deg, rgba(220,30,30,0.95), rgba(200,80,0,0.95))', backdropFilter: 'blur(8px)', color: '#fff', fontFamily: 'monospace', fontSize: '24px', fontWeight: 900, letterSpacing: '5px', border: '2px solid rgba(255,140,80,0.4)', borderRadius: '14px', cursor: 'pointer', boxShadow: '0 6px 30px rgba(220,50,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15)', animation: 'fightBtnGlow 2s ease-in-out infinite', transition: 'transform 0.15s ease' }}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.08)'; }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}
@@ -1348,11 +1524,11 @@ function ReadyScreen({ onStart }: { onStart: () => void }) {
 /* ══════════════════════════════════════════════════════════
    Finished Screen
    ══════════════════════════════════════════════════════════ */
-function FinishedScreen({ winner, canAdvance, playerHP, botHP, correct, wrong, maxCombo, totalQ, onPlayAgain, onRoomSkip, onBackToDashboard }: {
+function FinishedScreen({ winner, canAdvance, playerHP, botHP, correct, wrong, maxCombo, score, modeLabel, summary, totalQ, onPlayAgain, onRoomSkip, onBackToDashboard }: {
   winner: 'player' | 'bot' | 'draw'; canAdvance: boolean;
   playerHP: number; botHP: number;
-  correct: number; wrong: number; maxCombo: number; totalQ: number;
-  onPlayAgain: () => void;
+  correct: number; wrong: number; maxCombo: number; score: number; modeLabel: string; summary: RoundSummaryItem[]; totalQ: number;
+  onPlayAgain: (mode?: GameMode) => void;
   onRoomSkip?: () => void;
   onBackToDashboard?: () => void;
 }) {
@@ -1396,13 +1572,11 @@ function FinishedScreen({ winner, canAdvance, playerHP, botHP, correct, wrong, m
 
       <div style={{ textAlign: 'center', animation: 'statFadeIn 0.5s 0.15s ease-out both' }}>
         <p style={{ margin: 0, fontFamily: 'system-ui', fontSize: '13px', color: 'rgba(255,255,255,0.38)' }}>
-          {canAdvance ? 'เจ๋งมาก! ตอบถูกทุกข้อ!' : isDraw ? 'สูสีมากเลย!' : isWin ? 'ชนะแต่ตอบผิดบางข้อ — ต้องถูกทุกข้อถึงจะผ่านได้!' : 'ฝึกเพิ่มแล้วมาใหม่!'}
+          {canAdvance ? 'ชนะยกนี้ได้เยี่ยมมาก!' : isDraw ? 'สูสีมากเลย!' : isWin ? 'ชนะแต้มเฉียดฉิว!' : 'ฝึกเพิ่มแล้วมาใหม่!'}
         </p>
-        {!canAdvance && (
-          <div style={{ marginTop: '10px', fontFamily: 'monospace', fontSize: '11px', color: '#fbbf24', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: '8px', padding: '8px 16px', lineHeight: 1.6 }}>
-            ⚠️ ต้องตอบ<strong>ถูกทุกข้อ</strong>ถึงจะเดินหน้าต่อได้!
-          </div>
-        )}
+        <div style={{ marginTop: '10px', fontFamily: 'monospace', fontSize: '11px', color: '#93c5fd', background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(147,197,253,0.35)', borderRadius: '8px', padding: '8px 16px', lineHeight: 1.6 }}>
+          โหมด: <strong>{modeLabel}</strong> · คะแนนรวม <strong>{score}</strong>
+        </div>
       </div>
 
       {/* HP Bars */}
@@ -1419,8 +1593,8 @@ function FinishedScreen({ winner, canAdvance, playerHP, botHP, correct, wrong, m
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', width: '100%', maxWidth: '320px', animation: 'statFadeIn 0.5s 0.3s ease-out both' }}>
-        {([{ icon: '✅', val: correct, label: 'ถูก', color: '#4ade80' }, { icon: '❌', val: wrong, label: 'ผิด', color: '#f87171' }, { icon: '🔥', val: maxCombo, label: 'คอมโบ', color: '#ffaa00' }] as {icon:string;val:number;label:string;color:string}[]).map(({ icon, val, label, color }) => (
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px', width: '100%', maxWidth: '420px', animation: 'statFadeIn 0.5s 0.3s ease-out both' }}>
+        {([{ icon: '✅', val: correct, label: 'ถูก', color: '#4ade80' }, { icon: '❌', val: wrong, label: 'พลาด', color: '#f87171' }, { icon: '🔥', val: maxCombo, label: 'คอมโบ', color: '#ffaa00' }, { icon: '⭐', val: score, label: 'คะแนน', color: '#facc15' }] as {icon:string;val:number;label:string;color:string}[]).map(({ icon, val, label, color }) => (
           <div key={label} style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)', border: `1px solid ${color}30`, borderRadius: '10px', padding: '12px 8px', textAlign: 'center' }}>
             <span style={{ fontSize: '16px' }}>{icon}</span>
             <div style={{ fontFamily: 'monospace', fontSize: '22px', color, fontWeight: 700, marginTop: '4px' }}>{val}</div>
@@ -1429,8 +1603,19 @@ function FinishedScreen({ winner, canAdvance, playerHP, botHP, correct, wrong, m
         ))}
       </div>
 
+      <div style={{ width: '100%', maxWidth: '560px', borderRadius: '12px', border: '1px solid rgba(148,163,184,0.2)', background: 'rgba(15,23,42,0.4)', padding: '12px 14px' }}>
+        <div style={{ fontFamily: 'monospace', fontSize: '11px', color: '#bfdbfe', marginBottom: '8px', letterSpacing: '1px' }}>สรุปหลังยก</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '170px', overflowY: 'auto' }}>
+          {summary.slice(-5).map(item => (
+            <div key={item.id} style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#e2e8f0', border: `1px solid ${item.result === 'success' ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.28)'}`, borderRadius: '8px', background: item.result === 'success' ? 'rgba(20,83,45,0.2)' : 'rgba(127,29,29,0.2)', padding: '7px 9px' }}>
+              <strong>{item.result === 'success' ? 'ผ่าน' : 'พลาด'} · {CATEGORY_LABELS[item.category]}</strong> — {item.tip}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div style={{ animation: 'statFadeIn 0.5s 0.4s ease-out both', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-        <button onClick={onPlayAgain}
+        <button onClick={() => onPlayAgain()}
           style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 48px', background: canAdvance ? 'linear-gradient(135deg, rgba(30,120,50,0.95), rgba(20,80,40,0.95))' : 'linear-gradient(135deg, rgba(220,30,30,0.95), rgba(200,80,0,0.95))', backdropFilter: 'blur(8px)', color: '#fff', fontFamily: 'monospace', fontSize: '20px', fontWeight: 900, letterSpacing: '4px', border: `2px solid ${canAdvance ? 'rgba(80,220,120,0.4)' : 'rgba(255,140,80,0.4)'}`, borderRadius: '14px', cursor: 'pointer', boxShadow: canAdvance ? '0 6px 30px rgba(30,120,50,0.5), inset 0 1px 0 rgba(255,255,255,0.15)' : '0 6px 30px rgba(220,50,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15)', animation: 'fightBtnGlow 2s ease-in-out infinite', transition: 'transform 0.15s ease' }}
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.08)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}
@@ -1526,6 +1711,9 @@ export default function BoxingQuizBattle({ onComplete, isActive, onRoomSkip, onB
         correct={g.correct}
         wrong={g.wrong}
         maxCombo={g.maxCombo}
+        score={g.score}
+        modeLabel={g.modeLabel}
+        summary={g.roundSummary}
         totalQ={g.totalQ}
         onPlayAgain={g.startGame}
         onRoomSkip={onRoomSkip}
@@ -1557,9 +1745,11 @@ export default function BoxingQuizBattle({ onComplete, isActive, onRoomSkip, onB
       {/* Arena */}
       <div className="flex flex-col gap-4 w-full min-w-0 shrink-0 bg-[#112240] border border-white/10 shadow-2xl rounded-2xl p-4 sm:p-6 relative overflow-hidden">
         <GameHUD
-          playerHP={g.playerHP} botHP={g.botHP} timer={g.timer}
+          playerHP={g.playerHP} botHP={g.botHP} timer={g.timer} timerMax={g.timerMax}
           questionIndex={g.questionIndex} totalQ={g.totalQ} combo={g.combo}
-          currentCategory={g.question?.category}
+          score={g.score}
+          modeLabel={g.modeLabel}
+          currentCategory={g.question?.category as LearningCategory | undefined}
         />
         <BoxingRing
           hitTarget={g.hitTarget} feedback={g.feedback}

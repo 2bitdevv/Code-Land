@@ -382,6 +382,14 @@ export default function GameRoomPage() {
 
         await refetchScores();
         console.log('Stage complete', currentStageIndex, { timeForDb, finalScore });
+
+        // Move to next stage immediately for smoother UX
+        const nextIndex = currentStageIndex + 1;
+        if (nextIndex >= stages.length) {
+            setHasFinishedAll(true);
+        } else {
+            setCurrentStageIndex(nextIndex);
+        }
     };
 
     const handleSkipStageForRoom = async () => {

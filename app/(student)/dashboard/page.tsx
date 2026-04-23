@@ -16,7 +16,7 @@ interface Stage {
     title: string;
     sport: string;
     sportName: string;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
+    difficulty: 'Basic' | 'Easy' | 'Medium' | 'Hard';
     displayStage?: string;
 }
 
@@ -39,8 +39,8 @@ const CATEGORIES: Category[] = [
         colorHex: '#2196F3',
         borderHex: '#64B5F6',
         stages: [
-            { id: 1, title: 'HTML Structure', sport: '🏊', sportName: 'Swimming', difficulty: 'Easy', displayStage: '1-1' },
-            { id: 2, title: 'HTML Input', sport: '⚽', sportName: 'Football', difficulty: 'Easy', displayStage: '1-2' },
+            { id: 1, title: 'HTML Structure', sport: '🏊', sportName: 'Swimming', difficulty: 'Basic', displayStage: '1-1' },
+            { id: 2, title: 'HTML Input', sport: '⚽', sportName: 'Football', difficulty: 'Basic', displayStage: '1-2' },
         ],
     },
     {
@@ -356,7 +356,7 @@ export default function DashboardPage() {
                                                                         <i className="fa-solid fa-circle-check" aria-hidden />
                                                                     </span>
                                                                 )}
-                                                                <span className={`text-xs font-bold px-3 py-1 rounded-full ${stage.difficulty === 'Easy' ? 'bg-green-500/20 text-green-300' :
+                                                                <span className={`text-xs font-bold px-3 py-1 rounded-full ${stage.difficulty === 'Easy' || stage.difficulty === 'Basic' ? 'bg-green-500/20 text-green-300' :
                                                                     stage.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-300' :
                                                                         'bg-red-500/20 text-red-300'
                                                                     }`}>

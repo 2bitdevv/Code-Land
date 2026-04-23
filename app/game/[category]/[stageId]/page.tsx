@@ -127,11 +127,11 @@ export default function GameStagePage() {
         : null;
     const hasCompletedStage = stageResult !== null;
     const isWideStageLayout = (currentStageId === 4 || currentStageId === 6) && !hasCompletedStage;
-    const headerSport = currentStageId === 6 ? '🤖' : stage.sport;
-    const headerTitle = currentStageId === 6 ? 'LOGIC QUEST' : stage.title;
+    const headerSport = currentStageId === 6 ? '🤖' : (stage?.sport ?? '🎮');
+    const headerTitle = currentStageId === 6 ? 'LOGIC QUEST' : (stage?.title ?? 'Stage');
     const headerSubTitle = currentStageId === 6
-        ? `LOGIC QUEST • Stage ${stage.displayStage}`
-        : `${stage.sportName} • Stage ${stage.displayStage}`;
+        ? `LOGIC QUEST • Stage ${stage?.displayStage ?? '-'}`
+        : `${stage?.sportName ?? 'Challenge'} • Stage ${stage?.displayStage ?? '-'}`;
 
     const broadcastGlobalScoresUpdate = useCallback(() => {
         if (typeof window === 'undefined' || !user || !stage) return;

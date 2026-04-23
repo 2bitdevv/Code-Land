@@ -53,6 +53,11 @@ export function Navbar() {
                             🏅 Leaderboard
                         </Link>
                         {user && (
+                            <Link href="/quiz" className="text-white/80 hover:text-sky transition-colors px-2 md:px-3 py-2 rounded-xl text-sm md:text-base font-semibold hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-sky/50" aria-label="Quiz">
+                                🧠 Quiz
+                            </Link>
+                        )}
+                        {user && (
                             <Link href={activeDashboardLink} className="text-white/80 hover:text-sky transition-colors px-2 md:px-3 py-2 rounded-xl text-sm md:text-base font-semibold hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-sky/50" aria-label="Dashboard">
                                 {activeDashboardText}
                             </Link>
@@ -137,6 +142,16 @@ export function Navbar() {
                     >
                         🏅 Leaderboard
                     </Link>
+                    {user && (
+                        <Link
+                            href="/quiz"
+                            className="text-white/90 hover:text-sky transition-colors px-3 py-3 rounded-xl text-base font-semibold hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-sky/50"
+                            aria-label="Quiz"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            🧠 Quiz
+                        </Link>
+                    )}
                     {user && (
                         <Link
                             href={activeDashboardLink}
